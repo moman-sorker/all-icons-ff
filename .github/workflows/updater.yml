@@ -1,0 +1,52 @@
+
+name: Update Free Fire Assets
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'moman-sorker/all-icons-ff'
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Download and extract assets
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          rm -rf icons banners characters
+
+          wget https://github.com/I-SHOW-AKIRU200/AKIRU-ICONS/archive/refs/heads/main.zip -O akiru-icons.zip
+          unzip -o akiru-icons.zip
+          mkdir -p icons
+          mv AKIRU-ICONS-main/ICONS/* icons/
+          
+          wget https://github.com/paulafredo/All-Banner-free-fire/archive/refs/heads/main.zip -O banners.zip
+          unzip -o banners.zip
+          mkdir -p banners
+          mv All-Banner-free-fire-main/* banners/
+
+          wget https://github.com/paulafredo/Icons/archive/refs/heads/main.zip -O characters.zip
+          unzip -o characters.zip
+          mkdir -p characters
+          mv Icons-main/* characters/
+          
+          rm -rf *-main *.zip
+
+      - name: Commit and push changes
+        run: |
+          if [[ -z $(git status -s) ]]
+          then
+            echo "No changes to commit."
+          else
+            git add .
+            git commit -m "Automated update: Sync with upstream asset repositories"
+            git push
+          fi
