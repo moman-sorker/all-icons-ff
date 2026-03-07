@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          repository: moman-sorker/all-icons-ff
+          token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
 
       - name: Download and extract assets
         run: |
@@ -45,5 +49,5 @@ jobs:
           else
             git add .
             git commit -m "Automated update: Sync with upstream asset repositories"
-            git push
+            git push origin main
           fi
