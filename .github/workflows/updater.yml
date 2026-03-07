@@ -13,15 +13,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: moman-sorker/all-icons-ff
           token: ${{ secrets.GH_PAT }}
-          persist-credentials: true
 
-      - name: Download and extract assets
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Download and extract assets
+        run: |
           rm -rf icons banners characters
 
           wget https://github.com/I-SHOW-AKIRU200/AKIRU-ICONS/archive/refs/heads/main.zip -O akiru-icons.zip
@@ -49,5 +49,7 @@ jobs:
           else
             git add .
             git commit -m "Automated update: Sync with upstream asset repositories"
+
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/moman-sorker/all-icons-ff.git
             git push origin main
           fi
